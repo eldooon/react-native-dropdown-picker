@@ -10,6 +10,7 @@ import {
     TextInput,
     Dimensions,
 } from 'react-native';
+import Ripple from 'react-native-material-ripple';
 
 // PR: https://github.com/hossein-zare/react-native-dropdown-picker/pull/132
 // import {TouchableOpacity, ScrollView} from 'react-native-gesture-handler';
@@ -267,23 +268,23 @@ class DropDownPicker extends React.Component {
     }
 
     open(setState = true) {
-        Animated.timing(this.state.animatedHeight, {
-            toValue: this.props.dropDownMaxHeight,
-            duration: 500,
-            useNativeDriver: false
-        })
-
         this.setState({
             ...(setState && {isVisible: true})
         }, () => this.props.onOpen());
+
+        Animated.timing(this.state.animatedHeight, {
+            toValue: this.props.dropDownMaxHeight,
+            duration: 800,
+            useNativeDriver: false
+        }).start()
     }
 
     close(setState = true) {
         Animated.timing(this.state.animatedHeight, {
             toValue: 0,
-            duration: 500a,
+            duration: 800,
             useNativeDriver: false
-        })
+        }).start()
 
         this.setState({
             ...(setState && {isVisible: false}),
@@ -538,69 +539,71 @@ class DropDownPicker extends React.Component {
 
             }]}
                 {...this.props.containerProps}>
-                <TouchableOpacity
-                    onLayout={(event) => this.getLayout(event.nativeEvent.layout)}
-                    ref={(ref) => (this.layoutRef = ref)}
-                    disabled={disabled}
-                    onPress={() => this.toggle()}
-                    activeOpacity={1}
-                    style={[
-                        this.adjustStylesToDirection(
-                            styles.dropDown,
-                            {
-                                flexDirection: 'row', flex: 1
-                            },
-                            this.props.style,
-                            (this.state.isVisible && this.props.noBottomRadius) && styles.noBottomRadius,
-                        ),
-                    ]}
-                >
+                <Ripple>
+                    <TouchableOpacity
+                        onLayout={(event) => this.getLayout(event.nativeEvent.layout)}
+                        ref={(ref) => (this.layoutRef = ref)}
+                        disabled={disabled}
+                        onPress={() => this.toggle()}
+                        activeOpacity={1}
+                        style={[
+                            this.adjustStylesToDirection(
+                                styles.dropDown,
+                                {
+                                    flexDirection: 'row', flex: 1
+                                },
+                                this.props.style,
+                                (this.state.isVisible && this.props.noBottomRadius) && styles.noBottomRadius,
+                            ),
+                        ]}
+                    >
 
-                        {this.state.choice.icon && ! multiple && this.state.choice.icon()}
-                        <Text style={[
-                            { color: '#000' }, // default label color
-                            this.props.globalTextStyle,
-                            {opacity, flex: 1}, {
-                                marginLeft: (this.props.labelStyle.hasOwnProperty('textAlign') && this.props.labelStyle.textAlign === 'left') || ! this.props.labelStyle.hasOwnProperty('textAlign') ? 5 : 0,
-                                marginRight: (this.props.labelStyle.hasOwnProperty('textAlign') && this.props.labelStyle.textAlign === 'right') ? 5 : 0,
-                            },
-                            this.state.choice.icon ?? {marginLeft: 5},
-                            this.props.labelStyle,
-                            this.state.choice.label !== null && this.props.selectedLabelStyle,
-                            placeholderStyle
-                        ]} {...this.props.labelProps}>
-                            {multiple ? (
-                                this.state.choice.length > 0 ? this.getNumberOfItems() : placeholder
-                            ) : label}
-                        </Text>
+                            {this.state.choice.icon && ! multiple && this.state.choice.icon()}
+                            <Text style={[
+                                { color: '#000' }, // default label color
+                                this.props.globalTextStyle,
+                                {opacity, flex: 1}, {
+                                    marginLeft: (this.props.labelStyle.hasOwnProperty('textAlign') && this.props.labelStyle.textAlign === 'left') || ! this.props.labelStyle.hasOwnProperty('textAlign') ? 5 : 0,
+                                    marginRight: (this.props.labelStyle.hasOwnProperty('textAlign') && this.props.labelStyle.textAlign === 'right') ? 5 : 0,
+                                },
+                                this.state.choice.icon ?? {marginLeft: 5},
+                                this.props.labelStyle,
+                                this.state.choice.label !== null && this.props.selectedLabelStyle,
+                                placeholderStyle
+                            ]} {...this.props.labelProps}>
+                                {multiple ? (
+                                    this.state.choice.length > 0 ? this.getNumberOfItems() : placeholder
+                                ) : label}
+                            </Text>
 
-                    {this.props.showArrow && (
-                        <View style={[styles.arrow]}>
-                            <View style={[this.props.arrowStyle, {opacity}]}>
-                            {
-                                ! this.state.isVisible ? (
-                                    this.props.customArrowDown(this.props.arrowSize, this.props.arrowColor)
-                                ) : (
-                                    this.props.customArrowUp(this.props.arrowSize, this.props.arrowColor)
-                                )
-                            }
+                        {this.props.showArrow && (
+                            <View style={[styles.arrow]}>
+                                <View style={[this.props.arrowStyle, {opacity}]}>
+                                {
+                                    ! this.state.isVisible ? (
+                                        this.props.customArrowDown(this.props.arrowSize, this.props.arrowColor)
+                                    ) : (
+                                        this.props.customArrowUp(this.props.arrowSize, this.props.arrowColor)
+                                    )
+                                }
+                                </View>
                             </View>
-                        </View>
-                    )}
-                </TouchableOpacity>
-                <View style={[
+                        )}
+                    </TouchableOpacity>
+                </Ripple>
+                <Animated.View style={[
                     this.adjustStylesToDirection(
                         styles.dropDown,
                         styles.dropDownBox,
                         this.props.noTopRadius && styles.noTopRadius,
                         this.props.dropDownStyle,
                     ),
-
                     ! this.state.isVisible && styles.hidden, {
                         [this.state.direction]: this.state.top,
                         maxHeight: this.props.dropDownMaxHeight,
+                        height: this.state.animatedHeight,
                         zIndex: this.props.zIndex
-                    }
+                    },
                 ]}>
                     {
                       this.props.searchable && (
@@ -623,8 +626,8 @@ class DropDownPicker extends React.Component {
                       )
                     }
 
-                    <Animated.ScrollView
-                        style={{width: '100%', transform: { height: animatedHeight }}}
+                    <ScrollView
+                        style={{width: '100%'}}
                         nestedScrollEnabled={true}
                         ref={ref => {
                             this.scrollViewRef = ref;
@@ -637,8 +640,8 @@ class DropDownPicker extends React.Component {
                                 {this.props.searchableError(this.props.style.globalTextStyle)}
                             </View>
                         )}
-                    </Animated.ScrollView>
-                </View>
+                    </ScrollView>
+                </Animated.View>
             </View>
         );
     }
@@ -723,7 +726,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         position: 'absolute',
-        width: '100%',
+        width: '100%'
     },
     dropDownItem: {
         paddingVertical: 8,
