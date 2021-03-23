@@ -274,7 +274,7 @@ class DropDownPicker extends React.Component {
 
         Animated.timing(this.state.animatedHeight, {
             toValue: this.props.dropDownMaxHeight,
-            duration: 800,
+            duration: this.props.dropDownAnimationSpeed,
             useNativeDriver: false
         }).start()
     }
@@ -282,7 +282,7 @@ class DropDownPicker extends React.Component {
     close(setState = true) {
         Animated.timing(this.state.animatedHeight, {
             toValue: 0,
-            duration: 800,
+            duration: this.props.dropDownAnimationSpeed,
             useNativeDriver: false
         }).start()
 
@@ -654,6 +654,7 @@ DropDownPicker.defaultProps = {
     items: [],
     placeholder: 'Select an item',
     dropDownMaxHeight: 150,
+    dropDownAnimationSpeed: 400,
     style: {},
     dropDownStyle: {},
     containerStyle: {},
