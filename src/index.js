@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    Animated,
     StyleSheet,
     Text,
     View,
@@ -63,6 +64,7 @@ class DropDownPicker extends React.Component {
             defaultValueIndex,
             top: 0,
             direction: 'top',
+            animatedHeight: new Animated.Value(0)
         };
         this.dropdownCoordinates = [];
     }
@@ -265,12 +267,24 @@ class DropDownPicker extends React.Component {
     }
 
     open(setState = true) {
+        Animated.timing(this.state.animatedHeight, {
+            toValue: this.props.dropDownMaxHeight,
+            duration: 500,
+            useNativeDriver: false
+        })
+
         this.setState({
             ...(setState && {isVisible: true})
         }, () => this.props.onOpen());
     }
 
     close(setState = true) {
+        Animated.timing(this.state.animatedHeight, {
+            toValue: 0,
+            duration: 500a,
+            useNativeDriver: false
+        })
+
         this.setState({
             ...(setState && {isVisible: false}),
             searchableText: null
@@ -609,8 +623,8 @@ class DropDownPicker extends React.Component {
                       )
                     }
 
-                    <ScrollView
-                        style={{width: '100%'}}
+                    <Animated.ScrollView
+                        style={{width: '100%', transform: { height: animatedHeight }}}
                         nestedScrollEnabled={true}
                         ref={ref => {
                             this.scrollViewRef = ref;
@@ -623,7 +637,7 @@ class DropDownPicker extends React.Component {
                                 {this.props.searchableError(this.props.style.globalTextStyle)}
                             </View>
                         )}
-                    </ScrollView>
+                    </Animated.ScrollView>
                 </View>
             </View>
         );
