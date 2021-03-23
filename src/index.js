@@ -453,58 +453,62 @@ class DropDownPicker extends React.Component {
                     this.dropdownCoordinates[index] = layout.y;
                 }}
             >
-                <TouchableOpacity
-                    key={index}
+                <Ripple
                     onPress={() => ! item.untouchable && this.select(item)}
-                    style={[styles.dropDownItem, this.props.itemStyle, item.viewStyle,
-                    (
-                        this.state.choice.value === item.value && this.props.activeItemStyle
-                    ), {
-                        opacity: item?.disabled ? 0.3 : 1,
-                        alignItems: 'center',
-                        ...(
-                            multiple && {
-                                justifyContent: 'space-between',
-                                ...(this.isSelected(item) && this.props.activeItemStyle)
-                            }
-                        )
-                    }]}
-                    {...(item.untouchable && {
-                        activeOpacity: 1
-                    })}
-                    disabled={item?.disabled || false === true}
                 >
-                    <View style={{
-                        flexDirection: this.props.itemStyle?.flexDirection ?? 'row',
-                        ...(this.props.itemStyle.hasOwnProperty('justifyContent') && {
-                            justifyContent: this.props.itemStyle.justifyContent
-                        }),
-                        alignContent: 'center'
-                    }}>
-                        <View style={{justifyContent: 'center'}}>
-                            {item.icon && item.icon()}
+                    <TouchableOpacity
+                        key={index}
+                        onPress={() => ! item.untouchable && this.select(item)}
+                        style={[styles.dropDownItem, this.props.itemStyle, item.viewStyle,
+                        (
+                            this.state.choice.value === item.value && this.props.activeItemStyle
+                        ), {
+                            opacity: item?.disabled ? 0.3 : 1,
+                            alignItems: 'center',
+                            ...(
+                                multiple && {
+                                    justifyContent: 'space-between',
+                                    ...(this.isSelected(item) && this.props.activeItemStyle)
+                                }
+                            )
+                        }]}
+                        {...(item.untouchable && {
+                            activeOpacity: 1
+                        })}
+                        disabled={item?.disabled || false === true}
+                    >
+                        <View style={{
+                            flexDirection: this.props.itemStyle?.flexDirection ?? 'row',
+                            ...(this.props.itemStyle.hasOwnProperty('justifyContent') && {
+                                justifyContent: this.props.itemStyle.justifyContent
+                            }),
+                            alignContent: 'center'
+                        }}>
+                            <View style={{justifyContent: 'center'}}>
+                                {item.icon && item.icon()}
+                            </View>
+                            <Text style={[
+                                this.props.globalTextStyle,
+                                this.props.labelStyle,
+                                item.textStyle,
+                                    multiple ?
+                                    (this.isSelected(item) && this.props.activeLabelStyle) : (this.state.choice.value === item.value && this.props.activeLabelStyle)
+                                , {
+                                ...(item.icon && {
+                                    marginHorizontal: 5
+                                })
+                            }]} {...this.props.labelProps}>
+                                {this.getLabel(item)}
+                            </Text>
                         </View>
-                        <Text style={[
-                            this.props.globalTextStyle,
-                            this.props.labelStyle,
-                            item.textStyle,
-                                multiple ?
-                                (this.isSelected(item) && this.props.activeLabelStyle) : (this.state.choice.value === item.value && this.props.activeLabelStyle)
-                            , {
-                            ...(item.icon && {
-                                marginHorizontal: 5
-                            })
-                        }]} {...this.props.labelProps}>
-                            {this.getLabel(item)}
-                        </Text>
-                    </View>
 
-                    {
-                        this.state.props.multiple && this.state.choice.findIndex(i => i.label === item.label && i.value === item.value) > -1 && (
-                            this.props.customTickIcon()
-                        )
-                    }
-                </TouchableOpacity>
+                        {
+                            this.state.props.multiple && this.state.choice.findIndex(i => i.label === item.label && i.value === item.value) > -1 && (
+                                this.props.customTickIcon()
+                            )
+                        }
+                    </TouchableOpacity>
+                </Ripple>
 
                 {children.length > 0 && (
                     <View style={[{
@@ -539,7 +543,6 @@ class DropDownPicker extends React.Component {
 
             }]}
                 {...this.props.containerProps}>
-                <Ripple>
                     <TouchableOpacity
                         onLayout={(event) => this.getLayout(event.nativeEvent.layout)}
                         ref={(ref) => (this.layoutRef = ref)}
@@ -590,7 +593,6 @@ class DropDownPicker extends React.Component {
                             </View>
                         )}
                     </TouchableOpacity>
-                </Ripple>
                 <Animated.View style={[
                     this.adjustStylesToDirection(
                         styles.dropDown,
@@ -633,6 +635,7 @@ class DropDownPicker extends React.Component {
                             this.scrollViewRef = ref;
                         }}
                         {...scrollViewProps}>
+
                         {items.length > 0 ? items.map((item, index) =>
                             this.renderItem(item, index, items.length)
                         ) : (
